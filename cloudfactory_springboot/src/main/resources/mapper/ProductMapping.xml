@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.neu.cloudfactory.dao.ProductDao">
+
+    <select id="searchById" resultType="cn.edu.neu.cloudfactory.bean.Product_Type">
+       select * from product where p_id= #{p_id}
+    </select>
+
+    <insert id="insert" parameterType="cn.edu.neu.cloudfactory.bean.Product">
+        insert into product values (0,#{p_num},#{p_name},#{p_type},#{p_details})
+    </insert>
+
+    <delete id="deleteById">
+        delete from product where p_id=#{p_id}
+    </delete>
+
+    <update id="update" parameterType="cn.edu.neu.cloudfactory.bean.Product">
+        update product p set p.p_details=#{p_details}
+        where p.p_id=#{p_id}
+    </update>
+
+    <select id="getAllProduct" resultType="cn.edu.neu.cloudfactory.bean.Product">
+        select * from product
+        <if test="s!=null ">
+            WHERE p_num like #{s}
+        </if>
+    </select>
+
+</mapper>

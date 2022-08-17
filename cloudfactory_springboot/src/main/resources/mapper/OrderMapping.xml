@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.neu.cloudfactory.dao.OrderDao">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="o_id">
+        insert into cloudfactory.`order` values (null,#{o_num},#{o_pid},#{o_amount},#{o_delivery},#{o_ddl},#{o_user},#{u_name},#{u_phone},#{u_address},#{o_state})
+    </insert>
+
+    <delete id="deleteById">
+        delete from cloudfactory.`order` o where o.o_id=#{o_id}
+    </delete>
+
+    <update id="update" parameterType="cn.edu.neu.cloudfactory.bean.Order">
+        update cloudfactory.`order` o set o.o_pid=#{o_pid} ,o.o_amount=#{o_amount},o.o_state='未保存'
+        where o.o_id=#{o_id}
+    </update>
+
+    <select id="getAllOrder" resultType="cn.edu.neu.cloudfactory.bean.Order">
+        select * from cloudfactory.`order` o
+        <if test="s!=null ">
+            WHERE o.o_num like #{s}
+        </if>
+    </select>
+
+    <select id="changState" statementType="CALLABLE" >
+        { CALL cloudfactory.changeState(#{id}) }
+    </select>
+
+    <select id="getBidding" resultType="cn.edu.neu.cloudfactory.bean.Bidding">
+
+        select * from cloudfactory.bidding b
+        where b.f_id =#{f_id} and b.o_id =#{o_id}
+    </select>
+
+    <select id="setPrice" statementType="CALLABLE">
+        { CALL cloudfactory.bidding(#{o_id},#{f_id},#{price}) }
+    </select>
+
+    <select id="getBiddinglist" resultType="cn.edu.neu.cloudfactory.bean.Bidding">
+         select * from cloudfactory.bidding b
+        where  b.o_id =#{o_id}
+    </select>
+
+    <update id="selectBidding" >
+        update cloudfactory.bidding b set b.state ='是'
+        where b.id=#{id}
+    </update>
+
+
+    <select id="getAllScheduleOrder" resultType="cn.edu.neu.cloudfactory.bean.Order">
+        select o.o_id ,o.o_num, o.o_pid ,o.o_amount ,o.o_delivery ,o.o_ddl ,o.o_user ,o.u_name ,o.u_phone ,o.u_address ,o.o_state from cloudfactory.`order` o
+        left join cloudfactory.bidding b
+        on b.o_id =o.o_id
+        where b.state ='是' and b.f_id=#{f_id}
+
+        <if test="s!=null ">
+            and o.o_num like #{s}
+        </if>
+    </select>
+
+    <select id="getScheduleinfoByOid" resultType="cn.edu.neu.cloudfactory.bean.ScheduleInfo">
+        select * from cloudfactory.detail_schedule ds
+        where ds.o_id =#{o_id}
+    </select>
+
+    <insert id="addschedule" keyProperty="id" useGeneratedKeys="true">
+        insert into cloudfactory.detail_schedule values (0,#{e_id},#{start},#{end},#{o_id})
+    </insert>
+
+</mapper>

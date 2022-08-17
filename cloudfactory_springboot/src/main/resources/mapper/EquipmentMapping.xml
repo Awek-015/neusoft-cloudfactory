@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.neu.cloudfactory.dao.EquipmentDao">
+
+
+    <resultMap id="rentresult" type="String" >
+        <result column="str" property="str"/>
+    </resultMap>
+
+    <select id="searchById" resultType="cn.edu.neu.cloudfactory.bean.Equipment_Type">
+       select * from equipment_type where et_id= #{et_id}
+    </select>
+
+    <insert id="insert" parameterType="cn.edu.neu.cloudfactory.bean.Equipment">
+        insert into equipment values (0,#{e_num},#{e_name},#{e_type},#{e_details},'空闲',#{e_factory},'未租用' )
+    </insert>
+
+    <delete id="deleteById">
+        delete from equipment where e_id=#{e_id}
+    </delete>
+
+    <update id="update" parameterType="cn.edu.neu.cloudfactory.bean.Equipment">
+        update equipment  set e_details=#{e_details}
+        where e_id=#{e_id}
+    </update>
+
+    <select id="getAllEquipment" resultType="cn.edu.neu.cloudfactory.bean.Equipment">
+        select * from equipment
+        <if test="s!=null ">
+            WHERE e_name like #{s}
+        </if>
+    </select>
+
+    <update id="updateState" parameterType="cn.edu.neu.cloudfactory.bean.Equipment">
+        update equipment  set e_state=#{e_state}
+        where e_id=#{e_id}
+    </update>
+
+    <select id="getRentEquipment" resultType="cn.edu.neu.cloudfactory.bean.Equipment">
+        select e.e_id ,e.e_num ,e.e_name ,e.e_type ,e.e_state ,e.e_details ,e.e_factory ,e.e_leasestate
+        from cloudfactory.rent r
+        left join cloudfactory.equipment e
+        on e.e_id =r.r_equipment
+        left join cloudfactory.factory f
+        on f.f_id =r.r_factory
+        where r.r_start &lt;= now() and r.r_end &gt; now() and e.e_leasestate = '已租用' and f.f_id = #{factoryId}
+
+        <if test="s!=null ">
+
+            and e_name like #{s}
+        </if>
+    </select>
+
+    <select id="getNorentList" resultType="cn.edu.neu.cloudfactory.bean.Equipment">
+        select * from cloudfactory.equipment e
+        where e.e_leasestate ='未租用' and e.e_factory =0
+    </select>
+
+
+
+    <select id="rent"  statementType="CALLABLE" resultType="java.util.Map" >
+
+        call rent(
+        #{e_id},
+        #{start},
+        #{end},
+        #{f_id},
+        #{str,mode=OUT,jdbcType=VARCHAR})
+
+
+
+    </select>
+
+    <select id="getInfoByEquipment" resultType="cn.edu.neu.cloudfactory.bean.Throughput">
+        select * from throughput
+        where e_id=#{e_id}
+    </select>
+
+    <insert id="addThroughput" parameterType="cn.edu.neu.cloudfactory.bean.Throughput">
+        replace into throughput values (#{e_id},#{p_id},#{capacity})
+    </insert>
+</mapper>

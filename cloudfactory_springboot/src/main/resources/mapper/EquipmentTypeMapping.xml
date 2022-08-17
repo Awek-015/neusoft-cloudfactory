@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.neu.cloudfactory.dao.EquipmentTypeDao">
+
+    <select id="searchById" resultType="cn.edu.neu.cloudfactory.bean.Equipment_Type">
+       select * from equipment_type where et_id= #{et_id}
+    </select>
+
+    <insert id="insert" parameterType="cn.edu.neu.cloudfactory.bean.Equipment_Type">
+        insert into equipment_type values (0,#{et_name})
+    </insert>
+
+    <delete id="deleteById">
+        delete from equipment_type where et_id=#{et_id}
+    </delete>
+
+    <update id="update" parameterType="cn.edu.neu.cloudfactory.bean.Equipment_Type">
+        update equipment_type  set et_name=#{et_name}
+        where et_id=#{et_id}
+    </update>
+
+    <select id="getAllEquipment_Type" resultType="cn.edu.neu.cloudfactory.bean.Equipment_Type">
+        select * from equipment_type
+        <if test="s!=null ">
+            WHERE et_name like #{s}
+        </if>
+    </select>
+
+</mapper>

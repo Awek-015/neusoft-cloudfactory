@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.edu.neu.cloudfactory.dao.UserDao">
+
+    <select id="getByMessage" resultType="cn.edu.neu.cloudfactory.bean.User">
+        select * from user
+        where user.user_account=#{user_account} and user.user_password=#{user_password}
+    </select>
+
+    <select id="getAllUser" resultType="cn.edu.neu.cloudfactory.bean.User">
+        select * from user
+        <if test="s!=null ">
+        where  user_account like #{s}
+        </if>
+    </select>
+
+    <delete id="deleteById">
+        delete from user where user_id=#{user_id}
+    </delete>
+
+    <select id="getAllRole" resultType="cn.edu.neu.cloudfactory.bean.Role">
+        select * from role
+    </select>
+
+    <select id="register" statementType="CALLABLE" resultType="java.util.Map">
+        call register(
+        #{user_account},
+        #{user_password},
+        #{user_name},
+        #{user_phone},
+        #{user_role},
+        #{f_name},
+        #{f_detail},
+        #{res,mode=OUT,jdbcType=VARCHAR})
+    </select>
+
+</mapper>
